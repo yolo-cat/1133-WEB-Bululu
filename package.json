@@ -1,0 +1,32 @@
+{
+  "name": "bluetooth-chat-ui",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "dependencies": {
+    "@headlessui/vue": "latest",
+    "@iconify/vue": "latest",
+    "@vueuse/core": "latest",
+    "nuxt": "latest"
+  },
+  "devDependencies": {
+    "@nuxtjs/eslint-module": "latest",
+    "@nuxtjs/tailwindcss": "latest",
+    "@tailwindcss/forms": "latest",
+    "@tailwindcss/typography": "latest",
+    "@vueuse/nuxt": "latest",
+    "@types/node": "latest",
+    "eslint": "latest",
+    "prettier": "latest",
+    "typescript": "latest",
+    "vue": "latest"
+  }
+}
