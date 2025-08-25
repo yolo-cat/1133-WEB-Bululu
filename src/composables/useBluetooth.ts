@@ -8,7 +8,8 @@ export const useBluetooth = () => {
   const server = ref<BluetoothRemoteGATTServer | null>(null)
   const characteristic = ref<BluetoothRemoteGATTCharacteristic | null>(null)
 
-  const receivedMessage = ref<{ id: number, text: string } | null>(null)
+  // This will now hold the raw ArrayBuffer from the characteristic
+  const receivedData = ref<ArrayBuffer | null>(null)
 
   // Check for browser support on initialization
   if (typeof navigator !== 'undefined' && 'bluetooth' in navigator) {
@@ -60,16 +61,14 @@ export const useBluetooth = () => {
     const target = event.target as BluetoothRemoteGATTCharacteristic
     const value = target.value
     if (value) {
-      const messageText = new TextDecoder().decode(value)
-      console.log('Received message:', messageText)
-      // Update the ref with a new object to ensure reactivity triggers
-      receivedMessage.value = { id: Date.now(), text: messageText }
+      console.log(`Received raw data with byte length: ${value.buffer.byteLength}`)
+      // Pass up the raw ArrayBuffer. We use a new object to ensure watchers trigger.
+      receivedData.value = value.buffer
     }
   }
 
   const onDisconnected = () => {
     console.log('Device disconnected.')
-    // Clean up event listeners if characteristic was set
     if (characteristic.value) {
       characteristic.value.removeEventListener('characteristicvaluechanged', handleCharacteristicValueChanged)
       characteristic.value = null
@@ -84,26 +83,24 @@ export const useBluetooth = () => {
       device.value.removeEventListener('gattserverdisconnected', onDisconnected)
       if (device.value.gatt?.connected) {
         console.log('Disconnecting from GATT server...')
-        device.value.gatt.disconnect() // This will trigger the 'gattserverdisconnected' event, calling onDisconnected
+        device.value.gatt.disconnect()
       } else {
         onDisconnected()
       }
     }
   }
 
-  const sendMessage = async (message: string) => {
+  const sendData = async (data: ArrayBuffer) => {
     if (!isConnected.value || !characteristic.value) {
       console.error('Not connected or characteristic not available.')
       return
     }
     try {
-      console.log(`Sending message: ${message}`)
-      const encoder = new TextEncoder()
-      const data = encoder.encode(message)
+      console.log(`Sending raw data of size: ${data.byteLength}`)
       await characteristic.value.writeValueWithResponse(data)
-      console.log('Message sent successfully.')
+      console.log('Data sent successfully.')
     } catch (error) {
-      console.error('Failed to send message:', error)
+      console.error('Failed to send data:', error)
     }
   }
 
@@ -111,9 +108,9 @@ export const useBluetooth = () => {
     isSupported,
     isConnected,
     device,
-    receivedMessage,
+    receivedData,
     connect,
     disconnect,
-    sendMessage
+    sendData, // Renamed from sendMessage to sendData
   }
 }
