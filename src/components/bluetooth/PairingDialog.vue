@@ -16,10 +16,10 @@
 </template>
 
 <script setup lang="ts">
-import Button from '~/components/ui/Button.vue'
+import Button from '../ui/Button.vue'
 
 import { storeToRefs } from 'pinia'
-import { useBluetoothStore } from '~/stores/bluetooth'
+import { useBluetoothStore } from '../../stores/bluetooth'
 
 // Actions still come from the composable "service"
 const { connect, disconnect } = useBluetooth()

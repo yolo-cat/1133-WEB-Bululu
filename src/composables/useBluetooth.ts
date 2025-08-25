@@ -1,6 +1,6 @@
 import { ref } from 'vue'
-import { useBluetoothStore } from '~/stores/bluetooth'
-import { CHAT_SERVICE_UUID, CHAT_CHARACTERISTIC_UUID } from '~/utils/bluetooth'
+import { useBluetoothStore } from '../stores/bluetooth'
+import { CHAT_SERVICE_UUID, CHAT_CHARACTERISTIC_UUID } from '../utils/bluetooth'
 
 // This composable is now a "service" that performs actions but holds minimal state.
 // The global state is managed by the Pinia store.

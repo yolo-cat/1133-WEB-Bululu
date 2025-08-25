@@ -41,14 +41,14 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import ConnectionStatus from '~/components/bluetooth/ConnectionStatus.vue'
+import ConnectionStatus from '../bluetooth/ConnectionStatus.vue'
 // The filename is unusual, but we use it as is.
-import ChatBubble from '~/components/ui/components_ui_ChatBubble.vue'
-import Input from '~/components/ui/Input.vue'
-import Button from '~/components/ui/Button.vue'
+import ChatBubble from '../ui/components_ui_ChatBubble.vue'
+import Input from '../ui/Input.vue'
+import Button from '../ui/Button.vue'
 
 import { storeToRefs } from 'pinia'
-import { useBluetoothStore } from '~/stores/bluetooth'
+import { useBluetoothStore } from '../../stores/bluetooth'
 
 // useChat is auto-imported by Nuxt
 const { messages, sendMessage } = useChat()

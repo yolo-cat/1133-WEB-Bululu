@@ -24,7 +24,6 @@ export default defineNuxtConfig({
   
   // 擴充功能特定設定
   ssr: false,
-  target: 'static',
   
   // Vite 設定
   vite: {

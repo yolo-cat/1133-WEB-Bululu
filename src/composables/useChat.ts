@@ -1,10 +1,10 @@
 import { watch, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useBluetooth } from '~/composables/useBluetooth'
-import { useEncryption } from '~/composables/useEncryption'
-import { useChatStore } from '~/stores/chat'
-import { useBluetoothStore } from '~/stores/bluetooth'
-import type { Packet, KeyExchangePacket, ChatMessagePacket, Message } from '~/utils/types'
+import { useBluetooth } from './useBluetooth'
+import { useEncryption } from './useEncryption'
+import { useChatStore } from '../stores/chat'
+import { useBluetoothStore } from '../stores/bluetooth'
+import type { Packet, KeyExchangePacket, ChatMessagePacket, Message } from '../utils/types'
 
 // Helper to serialize a packet to ArrayBuffer
 const encodePacket = (packet: Packet): ArrayBuffer => {

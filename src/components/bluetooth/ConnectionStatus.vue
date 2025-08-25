@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { useBluetoothStore } from '~/stores/bluetooth'
+import { useBluetoothStore } from '../../stores/bluetooth'
 
 const bluetoothStore = useBluetoothStore()
 // Use storeToRefs to get reactive state properties

@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { useStorage } from '@vueuse/core'
-import type { Message } from '~/utils/types'
+import type { Message } from '../utils/types'
 
 export const useChatStore = defineStore('chat', () => {
   // Use useStorage to make the messages ref persistent.
