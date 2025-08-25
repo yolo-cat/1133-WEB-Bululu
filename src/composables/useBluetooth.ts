@@ -1,9 +1,13 @@
 import { ref } from 'vue'
+import { useBluetoothStore } from '~/stores/bluetooth'
 import { CHAT_SERVICE_UUID, CHAT_CHARACTERISTIC_UUID } from '~/utils/bluetooth'
 
+// This composable is now a "service" that performs actions but holds minimal state.
+// The global state is managed by the Pinia store.
 export const useBluetooth = () => {
-  const isSupported = ref(false)
-  const isConnected = ref(false)
+  const bluetoothStore = useBluetoothStore()
+
+  // These refs are instance-specific and not needed globally.
   const device = ref<BluetoothDevice | null>(null)
   const server = ref<BluetoothRemoteGATTServer | null>(null)
   const characteristic = ref<BluetoothRemoteGATTCharacteristic | null>(null)
@@ -13,11 +17,13 @@ export const useBluetooth = () => {
 
   // Check for browser support on initialization
   if (typeof navigator !== 'undefined' && 'bluetooth' in navigator) {
-    isSupported.value = true
+    bluetoothStore.setSupported(true)
+  } else {
+    bluetoothStore.setSupported(false)
   }
 
   const connect = async () => {
-    if (!isSupported.value) {
+    if (!bluetoothStore.isSupported) {
       console.error('Web Bluetooth is not supported in this browser.')
       return
     }
@@ -39,13 +45,12 @@ export const useBluetooth = () => {
         console.log('Getting chat characteristic...')
         characteristic.value = await service.getCharacteristic(CHAT_CHARACTERISTIC_UUID)
 
-        isConnected.value = true
+        // Update global state via store
+        bluetoothStore.setConnectionState(true, selectedDevice.name || 'Unnamed Device')
         console.log('Connected and characteristic found.')
 
-        // Listen for disconnection events
         device.value.addEventListener('gattserverdisconnected', onDisconnected)
 
-        // Start notifications to receive messages
         await characteristic.value.startNotifications()
         characteristic.value.addEventListener('characteristicvaluechanged', handleCharacteristicValueChanged)
         console.log('Notifications started.')
@@ -62,7 +67,6 @@ export const useBluetooth = () => {
     const value = target.value
     if (value) {
       console.log(`Received raw data with byte length: ${value.buffer.byteLength}`)
-      // Pass up the raw ArrayBuffer. We use a new object to ensure watchers trigger.
       receivedData.value = value.buffer
     }
   }
@@ -73,7 +77,8 @@ export const useBluetooth = () => {
       characteristic.value.removeEventListener('characteristicvaluechanged', handleCharacteristicValueChanged)
       characteristic.value = null
     }
-    isConnected.value = false
+    // Update global state via store
+    bluetoothStore.setConnectionState(false, null)
     device.value = null
     server.value = null
   }
@@ -91,7 +96,8 @@ export const useBluetooth = () => {
   }
 
   const sendData = async (data: ArrayBuffer) => {
-    if (!isConnected.value || !characteristic.value) {
+    // Read state from the store
+    if (!bluetoothStore.isConnected || !characteristic.value) {
       console.error('Not connected or characteristic not available.')
       return
     }
@@ -105,12 +111,10 @@ export const useBluetooth = () => {
   }
 
   return {
-    isSupported,
-    isConnected,
-    device,
+    // Only export actions and received data. State should be consumed from the store.
     receivedData,
     connect,
     disconnect,
-    sendData, // Renamed from sendMessage to sendData
+    sendData,
   }
 }

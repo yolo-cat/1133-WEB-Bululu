@@ -18,6 +18,13 @@
 <script setup lang="ts">
 import Button from '~/components/ui/Button.vue'
 
-// useBluetooth is auto-imported by Nuxt
-const { isSupported, isConnected, connect, disconnect } = useBluetooth()
+import { storeToRefs } from 'pinia'
+import { useBluetoothStore } from '~/stores/bluetooth'
+
+// Actions still come from the composable "service"
+const { connect, disconnect } = useBluetooth()
+
+// State comes from the store
+const bluetoothStore = useBluetoothStore()
+const { isSupported, isConnected } = storeToRefs(bluetoothStore)
 </script>

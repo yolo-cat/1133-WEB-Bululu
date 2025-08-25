@@ -47,9 +47,13 @@ import ChatBubble from '~/components/ui/components_ui_ChatBubble.vue'
 import Input from '~/components/ui/Input.vue'
 import Button from '~/components/ui/Button.vue'
 
-// useChat and useBluetooth are auto-imported by Nuxt
+import { storeToRefs } from 'pinia'
+import { useBluetoothStore } from '~/stores/bluetooth'
+
+// useChat is auto-imported by Nuxt
 const { messages, sendMessage } = useChat()
-const { isConnected } = useBluetooth()
+const bluetoothStore = useBluetoothStore()
+const { isConnected } = storeToRefs(bluetoothStore)
 
 const newMessage = ref('')
 

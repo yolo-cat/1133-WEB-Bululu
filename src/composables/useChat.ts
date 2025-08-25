@@ -1,7 +1,9 @@
 import { watch, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useBluetooth } from '~/composables/useBluetooth'
 import { useEncryption } from '~/composables/useEncryption'
 import { useChatStore } from '~/stores/chat'
+import { useBluetoothStore } from '~/stores/bluetooth'
 import type { Packet, KeyExchangePacket, ChatMessagePacket, Message } from '~/utils/types'
 
 // Helper to serialize a packet to ArrayBuffer
@@ -22,7 +24,9 @@ const decodePacket = (buffer: ArrayBuffer): Packet | null => {
 }
 
 export const useChat = () => {
-  const { isConnected, receivedData, sendData } = useBluetooth()
+  const { receivedData, sendData } = useBluetooth()
+  const bluetoothStore = useBluetoothStore()
+  const { isConnected } = storeToRefs(bluetoothStore)
   const {
     keyPair,
     sharedKey,
