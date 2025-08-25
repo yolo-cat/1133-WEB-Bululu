@@ -31,3 +31,13 @@ export interface ChatMessagePacket {
   type: 'msg';
   payload: EncryptedPayload;
 }
+
+/**
+ * Represents a single chat message in the UI.
+ */
+export interface Message {
+  id: number;
+  text: string;
+  timestamp: Date;
+  sender: 'me' | 'them';
+}

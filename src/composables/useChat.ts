@@ -1,15 +1,8 @@
-import { ref, watch, onMounted } from 'vue'
+import { watch, onMounted } from 'vue'
 import { useBluetooth } from '~/composables/useBluetooth'
 import { useEncryption } from '~/composables/useEncryption'
-import type { Packet, KeyExchangePacket, ChatMessagePacket } from '~/utils/types'
-
-// This could be moved to a types file later
-export interface Message {
-  id: number;
-  text: string;
-  timestamp: Date;
-  sender: 'me' | 'them';
-}
+import { useChatStore } from '~/stores/chat'
+import type { Packet, KeyExchangePacket, ChatMessagePacket, Message } from '~/utils/types'
 
 // Helper to serialize a packet to ArrayBuffer
 const encodePacket = (packet: Packet): ArrayBuffer => {
@@ -41,7 +34,8 @@ export const useChat = () => {
     decrypt,
   } = useEncryption()
 
-  const messages = ref<Message[]>([])
+  // Use the Pinia store for state management
+  const chatStore = useChatStore()
 
   // Generate our keypair once the composable is used
   onMounted(async () => {
@@ -77,7 +71,6 @@ export const useChat = () => {
         const theirPublicKey = await importPublicKey(new Uint8Array(packet.payload).buffer)
         if (theirPublicKey) {
           await deriveSharedSecret(theirPublicKey)
-          // If we haven't sent our key yet (e.g., they connected first), send it now.
           if (keyPair.value?.publicKey) {
             console.log('Replying with our public key...')
             const exportedKey = await exportPublicKey(keyPair.value.publicKey)
@@ -102,7 +95,8 @@ export const useChat = () => {
             timestamp: new Date(),
             sender: 'them',
           }
-          messages.value.push(incomingMessage)
+          // Add the message to the store
+          chatStore.addMessage(incomingMessage)
         } else {
           console.warn('Failed to decrypt message.')
         }
@@ -132,20 +126,21 @@ export const useChat = () => {
       }
       sendData(encodePacket(packet))
 
-      // Add our own message to the list immediately
       const newMessage: Message = {
         id: Date.now(),
         text,
         timestamp: new Date(),
         sender: 'me',
       }
-      messages.value.push(newMessage)
+      // Add the sent message to the store
+      chatStore.addMessage(newMessage)
     }
   }
 
   return {
-    messages,
+    // Expose the messages from the store
+    messages: chatStore.messages,
     sendMessage,
-    isSecure: sharedKey, // Expose sharedKey to UI can know if connection is secure
+    isSecure: sharedKey,
   }
 }
