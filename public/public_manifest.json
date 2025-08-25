@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "Bluetooth Chat - 私密聊天",
+  "version": "1.0.0",
+  "description": "基於藍牙的端對端加密聊天工具",
+  
+  "permissions": [
+    "storage",
+    "activeTab"
+  ],
+  
+  "optional_permissions": [
+    "bluetooth"
+  ],
+  
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Bluetooth Chat"
+  },
+  
+  "background": {
+    "service_worker": "background.js"
+  },
+  
+  "content_scripts": [{
+    "matches": ["<all_urls>"],
+    "js": ["content.js"]
+  }],
+  
+  "web_accessible_resources": [{
+    "resources": ["_nuxt/*"],
+    "matches": ["<all_urls>"]
+  }]
+}
